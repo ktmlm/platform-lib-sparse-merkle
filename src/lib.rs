@@ -62,9 +62,7 @@ pub fn flip_bit(b: &mut [u8; 32], index: usize) {
 // 256 bit values are used both as keys, and as per node hashes. To avoid confusion,
 // we've given different types to these.
 
-#[derive(
-    Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Serialize, Deserialize,
-)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Serialize, Deserialize)]
 pub struct Key(Digest); // [u8; DIGESTBYTES];
 
 impl Key {
@@ -328,8 +326,7 @@ impl<D: MerkleDB> SmtMap256<D> {
     }
 
     fn build_key_for_hash(idx: &TreeNodeIndex) -> Result<Vec<u8>> {
-        let raw_key =
-            serde_json::to_vec(idx).c(d!("error serializing TreeNodeIndex"))?;
+        let raw_key = serde_json::to_vec(idx).c(d!("error serializing TreeNodeIndex"))?;
         Ok(Prefix::new(HASH_PREFIX)
             .push(raw_key.as_slice())
             .as_ref()
@@ -554,8 +551,7 @@ mod tests {
 
     #[test]
     fn test_tree_node_index() {
-        let mut index =
-            TreeNodeIndex::leaf(Key(r256("1234567890abcdef1234567890abcdef")));
+        let mut index = TreeNodeIndex::leaf(Key(r256("1234567890abcdef1234567890abcdef")));
         assert!(!index.is_left());
         for _ in 0..3 {
             index.move_up();
@@ -625,9 +621,8 @@ mod tests {
 
         let value1 = Some(b"ffeebbaa99887766554433221100".to_vec());
         let value2 = Some(b"ffeebbaa99887766554433221199".to_vec());
-        let value3 = Some(
-            b"cafebabecafebabecafebabecafebabecafebabecafebabecafebabecafebabe".to_vec(),
-        );
+        let value3 =
+            Some(b"cafebabecafebabecafebabecafebabecafebabecafebabecafebabecafebabe".to_vec());
 
         assert!(smt.set(&key, value1.clone()).is_ok());
         assert_ne!(merkle_root, (&smt).merkle_root().unwrap());
@@ -718,17 +713,10 @@ mod tests {
         assert_eq!(
             proof,
             MerkleProof {
-                bitmap: b256(
-                    "0200000000000000000000000000000000000000000000000000000000000080"
-                )
-                    .0,
+                bitmap: b256("0200000000000000000000000000000000000000000000000000000000000080").0,
                 hashes: vec![
-                    b256(
-                        "5031918db6776a678116ebe3352a3283f28983dbec4df0783c4988a7be461922"
-                    ),
-                    b256(
-                        "09e975535684248aafbf0d00824aadd496879c9e375e298fdd33e7adc09c5067"
-                    ),
+                    b256("5031918db6776a678116ebe3352a3283f28983dbec4df0783c4988a7be461922"),
+                    b256("09e975535684248aafbf0d00824aadd496879c9e375e298fdd33e7adc09c5067"),
                 ],
             },
         );
@@ -752,17 +740,10 @@ mod tests {
         assert_eq!(
             proof,
             MerkleProof {
-                bitmap: b256(
-                    "0200000000000000000000000000000000000000000000000000000000000080"
-                )
-                    .0,
+                bitmap: b256("0200000000000000000000000000000000000000000000000000000000000080").0,
                 hashes: vec![
-                    b256(
-                        "5031918db6776a678116ebe3352a3283f28983dbec4df0783c4988a7be461922"
-                    ),
-                    b256(
-                        "09e975535684248aafbf0d00824aadd496879c9e375e298fdd33e7adc09c5067"
-                    ),
+                    b256("5031918db6776a678116ebe3352a3283f28983dbec4df0783c4988a7be461922"),
+                    b256("09e975535684248aafbf0d00824aadd496879c9e375e298fdd33e7adc09c5067"),
                 ],
             },
         );
@@ -778,10 +759,7 @@ mod tests {
         assert_eq!(
             proof,
             MerkleProof {
-                bitmap: b256(
-                    "0000000000000000000000000000000000000000000000000000000000000080"
-                )
-                .0,
+                bitmap: b256("0000000000000000000000000000000000000000000000000000000000000080").0,
                 hashes: vec![b256(
                     "09e975535684248aafbf0d00824aadd496879c9e375e298fdd33e7adc09c5067"
                 ),],
@@ -866,7 +844,10 @@ mod tests {
             &MerkleProof {
                 // wrong bitmap - missing bit
                 bitmap: b256("0200000000000000000000000000000000000000000000000000000000000000").0,
-                hashes: vec![b256("d6f751104ddfead9549c96fabdbd4d2fc6876c8cd9a49ea4a821de938f71a011"), b256("5a7ef746ad33334b4fbd7406a1a4ffa5c5f959199448d5ae6ed39b4a9d6ebe5a"),],
+                hashes: vec![
+                    b256("d6f751104ddfead9549c96fabdbd4d2fc6876c8cd9a49ea4a821de938f71a011"),
+                    b256("5a7ef746ad33334b4fbd7406a1a4ffa5c5f959199448d5ae6ed39b4a9d6ebe5a"),
+                ],
             }
         ));
         assert!(!smt.check_merkle_proof(
@@ -875,7 +856,10 @@ mod tests {
             &MerkleProof {
                 // wrong bitmap - extra bit
                 bitmap: b256("0200010000000000000000000000000000000000000000000000000000000080").0,
-                hashes: vec![b256("d6f751104ddfead9549c96fabdbd4d2fc6876c8cd9a49ea4a821de938f71a011"), b256("5a7ef746ad33334b4fbd7406a1a4ffa5c5f959199448d5ae6ed39b4a9d6ebe5a"),],
+                hashes: vec![
+                    b256("d6f751104ddfead9549c96fabdbd4d2fc6876c8cd9a49ea4a821de938f71a011"),
+                    b256("5a7ef746ad33334b4fbd7406a1a4ffa5c5f959199448d5ae6ed39b4a9d6ebe5a"),
+                ],
             }
         ));
         assert!(!smt.check_merkle_proof(
@@ -884,7 +868,10 @@ mod tests {
             &MerkleProof {
                 // wrong bitmap - wrong bit
                 bitmap: b256("0400000000000000000000000000000000000000000000000000000000000080").0,
-                hashes: vec![b256("d6f751104ddfead9549c96fabdbd4d2fc6876c8cd9a49ea4a821de938f71a011"), b256("5a7ef746ad33334b4fbd7406a1a4ffa5c5f959199448d5ae6ed39b4a9d6ebe5a"),],
+                hashes: vec![
+                    b256("d6f751104ddfead9549c96fabdbd4d2fc6876c8cd9a49ea4a821de938f71a011"),
+                    b256("5a7ef746ad33334b4fbd7406a1a4ffa5c5f959199448d5ae6ed39b4a9d6ebe5a"),
+                ],
             }
         ));
     }
